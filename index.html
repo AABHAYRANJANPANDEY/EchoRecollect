@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="warm">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EchoRecollect — Family Recipe & Story Preserver</title>
+  <meta name="description" content="EchoRecollect transforms rambling family voice memos and oral kitchen stories into beautifully structured recipes and heirloom printable cards.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Sticky Navigation & Branding Header -->
+  <header class="site-header" id="siteHeader">
+    <div class="header-container">
+      <div class="brand-wrapper">
+        <div class="brand-logo-icon" aria-hidden="true">📖</div>
+        <div class="brand-title-group">
+          <div class="brand-name">Echo<span>Recollect</span></div>
+          <button class="family-keepsake-badge" id="headerFamilyBadge" title="Click to edit Family Cookbook Name">
+            <span id="headerFamilyNameText">The Rossi Family Cookbook</span> ✏️
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs" aria-label="Main Navigation">
+        <button class="nav-tab-btn active" id="tabNavLogger" data-tab="logger">
+          🎙️ <span>Voice Memo & Extractor</span>
+        </button>
+        <button class="nav-tab-btn" id="tabNavLibrary" data-tab="library">
+          📚 <span>Cookbook Library</span>
+          <span class="nav-badge-count" id="libraryCountBadge">3</span>
+        </button>
+        <button class="nav-tab-btn" id="tabNavSettings" data-tab="settings">
+          ⚙️ <span>Settings</span>
+        </button>
+      </nav>
+
+      <!-- Quick Actions -->
+      <div class="header-actions">
+        <button class="icon-btn" id="quickThemeToggle" title="Toggle Theme mode" aria-label="Toggle Theme">
+          🎨
+        </button>
+        <button class="icon-btn" id="quickExportAllBtn" title="Export entire Cookbook to JSON" aria-label="Export Cookbook">
+          💾
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Heirloom Banner -->
+  <section class="hero-banner" id="heroBanner">
+    <div class="hero-content">
+      <span class="hero-tagline" id="heroTagline">Preserving the love, laughter, and aroma of our kitchen...</span>
+      <h1 class="hero-family-title">
+        <span id="heroFamilyTitleText">The Rossi Family Cookbook</span>
+        <button class="hero-edit-btn" id="heroEditNameBtn" title="Customize Family Name">Customize</button>
+      </h1>
+      <p class="hero-subtitle" id="heroSubtitleText">
+        Transform rambling voice dictations and grandmother's handwritten lore into preserved recipes, generation by generation.
+      </p>
+
+      <div class="hero-stats-row">
+        <div class="stat-pill">
+          <span>📖 Saved Heirlooms:</span>
+          <strong id="statRecipeCount">3</strong>
+        </div>
+        <div class="stat-pill">
+          <span>👵 Storytellers:</span>
+          <strong id="statStorytellersCount">3</strong>
+        </div>
+        <div class="stat-pill">
+          <span>🖨️ Ready to Print:</span>
+          <strong id="statPrintableCount">3 Cards</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Application Body -->
+  <main class="app-main">
+
+    <!-- TAB 1: Voice Memo / Story Logger & AI Extractor -->
+    <section class="tab-panel active" id="loggerPanel" aria-labelledby="tabNavLogger">
+      <div class="logger-grid">
+
+        <!-- Column 1: Voice Memo & Unstructured Story Logger -->
+        <article class="card" id="storyInputCard">
+          <div class="card-header-styled">
+            <div class="card-title-group">
+              <h2>🎙️ Voice Memo & Story Logger</h2>
+              <p>Type, dictate, or paste an unstructured memory or rambling recipe from an older relative.</p>
+            </div>
+          </div>
+
+          <!-- Preset Voice Memos Quick Selector -->
+          <div class="preset-bar">
+            <div class="preset-title">🪄 Try Sample Relative Dictations</div>
+            <div class="preset-chips" id="presetChipsContainer">
+              <!-- Dynamically populated or static presets -->
+              <button class="preset-chip" data-preset-idx="0">👵 Grandma Rosa's Sunday Gravy (1952)</button>
+              <button class="preset-chip" data-preset-idx="1">🌽 Uncle Joe's Cast-Iron Cornbread</button>
+              <button class="preset-chip" data-preset-idx="2">🍚 Abuela Sofia's Arroz con Leche</button>
+            </div>
+          </div>
+
+          <!-- Storyteller Metadata Inputs -->
+          <div class="metadata-inputs-row">
+            <div class="form-group">
+              <label for="inputStoryteller">Storyteller / Relative</label>
+              <input type="text" id="inputStoryteller" placeholder="e.g. Grandma Rosa" value="Grandma Rosa">
+            </div>
+            <div class="form-group">
+              <label for="inputGeneration">Generation / Era</label>
+              <input type="text" id="inputGeneration" placeholder="e.g. 1952 / Naples to NY" value="Circa 1952">
+            </div>
+            <div class="form-group">
+              <label for="inputCategory">Course / Category</label>
+              <select id="inputCategory">
+                <option value="Sunday Dinners">Sunday Dinners</option>
+                <option value="Desserts & Baking">Desserts & Baking</option>
+                <option value="Breads & Baking">Breads & Baking</option>
+                <option value="Soups & Stews">Soups & Stews</option>
+                <option value="Holiday Traditions">Holiday Traditions</option>
+                <option value="Appetizers & Sides">Appetizers & Sides</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Audio Voice Recorder & Visualizer -->
+          <div class="voice-recorder-bar" id="voiceRecorderBar">
+            <div class="recorder-controls-row">
+              <button class="mic-toggle-btn" id="micBtn" type="button">
+                <span class="mic-icon-pulse"></span>
+                <span id="micBtnLabel">Start Microphone Dictation</span>
+              </button>
+              <span class="recording-timer" id="recordingTimer">00:00</span>
+              <button class="sim-audio-btn" id="simAudioBtn" type="button">
+                🔊 <span>Simulate Relative Dictation</span>
+              </button>
+            </div>
+
+            <!-- Waveform Canvas -->
+            <div class="waveform-container">
+              <canvas id="waveformCanvas"></canvas>
+              <span class="waveform-placeholder" id="waveformNotice">Speech audio level visualizer active when speaking</span>
+            </div>
+          </div>
+
+          <!-- Dictation Textarea -->
+          <div class="dictation-textarea-wrapper">
+            <label for="dictationText" class="section-label" style="display:block; margin-bottom: 0.4rem;">
+              Family Story or Recipe Narration
+            </label>
+            <textarea 
+              id="dictationText" 
+              class="dictation-textarea"
+              placeholder="Don't worry about formatting! Just paste Uncle Joe's voice notes or type whatever grandma said: 'Well back in 1968 we always used two fistfuls of flour, and my mother insisted on crushing the tomatoes with cold hands...'"></textarea>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons-row">
+            <button class="clear-btn" id="clearDictationBtn" type="button">Clear Text</button>
+            <button class="ai-extract-btn" id="extractBtn" type="button">
+              <span>✨</span>
+              <span id="extractBtnLabel">Extract Recipe & Family Lore</span>
+            </button>
+          </div>
+        </article>
+
+        <!-- Column 2: AI Recipe & Story Extractor Output Preview -->
+        <article class="card extractor-preview-panel" id="extractorPreviewPanel">
+          <div class="card-header-styled">
+            <div class="card-title-group">
+              <h2>✨ Extracted Heirloom Section</h2>
+              <p>Cleaned up, organized, and split into structured recipe & family lore.</p>
+            </div>
+          </div>
+
+          <!-- Empty placeholder before extraction -->
+          <div class="empty-state-box" id="extractorEmptyState">
+            <div class="empty-icon">📜</div>
+            <h3>Ready for Extraction</h3>
+            <p>Paste or dictate a story, then click <strong>"Extract Recipe & Family Lore"</strong> to separate ingredients, instructions, and memories.</p>
+          </div>
+
+          <!-- Active Extracted Result Card (Hidden until extracted) -->
+          <div class="extracted-card" id="extractedResultCard" style="display: none;">
+            <div class="card-ribbon">Extracted</div>
+
+            <!-- Editable Title -->
+            <input type="text" class="extracted-title-input" id="extractedTitle" value="Sunday Rigatoni with Hand-Crushed Plum Gravy" title="Click to edit recipe title">
+
+            <!-- Storyteller and Times Meta Badges -->
+            <div class="extracted-meta-badges">
+              <span class="meta-chip">👵 <strong id="extractedStorytellerBadge">Grandma Rosa</strong></span>
+              <span class="meta-chip">⏳ Prep: <input type="text" id="extractedPrepTime" value="20 mins" style="width:70px; border:none; background:transparent; font-weight:700;"></span>
+              <span class="meta-chip">🔥 Cook: <input type="text" id="extractedCookTime" value="3.5 hours" style="width:70px; border:none; background:transparent; font-weight:700;"></span>
+              <span class="meta-chip">🍽️ Servings: <input type="text" id="extractedServings" value="6-8" style="width:50px; border:none; background:transparent; font-weight:700;"></span>
+            </div>
+
+            <!-- 1. Family Anecdote & History Section -->
+            <div class="heirloom-anecdote-box">
+              <div class="anecdote-header">
+                <span class="anecdote-title">📖 Family Anecdote & History</span>
+                <span style="font-size:0.75rem; color:var(--text-light); font-style:normal;">(Editable Lore)</span>
+              </div>
+              <textarea class="anecdote-content" id="extractedAnecdote" rows="4"></textarea>
+            </div>
+
+            <!-- 2. Ingredients Section -->
+            <div class="extracted-section">
+              <div class="section-label-row">
+                <span class="section-label">🥣 Ingredients List</span>
+                <button class="mini-add-btn" id="addIngredientBtn" type="button">+ Add Ingredient</button>
+              </div>
+              <div class="ingredients-editor-list" id="extractedIngredientsList">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- 3. Step-by-Step Instructions -->
+            <div class="extracted-section">
+              <div class="section-label-row">
+                <span class="section-label">🍳 Step-by-Step Instructions</span>
+                <button class="mini-add-btn" id="addInstructionBtn" type="button">+ Add Step</button>
+              </div>
+              <div class="steps-editor-list" id="extractedInstructionsList">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Footer Save & Export Actions -->
+            <div class="extracted-actions-footer">
+              <button class="print-direct-btn" id="printExtractedDirectBtn" type="button">
+                🖨️ <span>Preview & Print Card</span>
+              </button>
+              <button class="save-cookbook-btn" id="saveExtractedBtn" type="button">
+                💾 <span>Save to Digital Cookbook</span>
+              </button>
+            </div>
+          </div>
+
+        </article>
+
+      </div>
+    </section>
+
+    <!-- TAB 2: Digital Cookbook Library -->
+    <section class="tab-panel" id="libraryPanel" aria-labelledby="tabNavLibrary">
+      
+      <!-- Search & Category Filters -->
+      <div class="library-controls-bar">
+        <div class="search-and-filters-row">
+          <div class="search-input-wrapper">
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <input 
+              type="text" 
+              id="librarySearchInput" 
+              class="library-search-input" 
+              placeholder="Search recipes, ingredients, stories, or relatives...">
+            <button class="clear-search-btn" id="clearLibrarySearchBtn" title="Clear Search">✕</button>
+          </div>
+
+          <div class="form-group" style="margin:0;">
+            <select id="libraryStorytellerFilter" class="filter-select">
+              <option value="ALL">All Family Storytellers</option>
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+
+          <div class="form-group" style="margin:0;">
+            <select id="librarySortFilter" class="filter-select">
+              <option value="NEWEST">Newest Added</option>
+              <option value="OLDEST">Oldest Era</option>
+              <option value="TITLE_AZ">Title (A-Z)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Category Pills -->
+        <div class="category-pills-row" id="categoryPillsRow">
+          <button class="category-pill active" data-cat="ALL">All Recipes</button>
+          <button class="category-pill" data-cat="FAVORITES">❤️ Favorites Only</button>
+          <button class="category-pill" data-cat="Sunday Dinners">🍝 Sunday Dinners</button>
+          <button class="category-pill" data-cat="Desserts & Baking">🍰 Desserts & Baking</button>
+          <button class="category-pill" data-cat="Breads & Baking">🍞 Breads & Baking</button>
+          <button class="category-pill" data-cat="Soups & Stews">🍲 Soups & Stews</button>
+        </div>
+      </div>
+
+      <!-- Recipes Grid -->
+      <div class="recipes-grid" id="recipesGrid">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Empty State if no search matches -->
+      <div class="empty-state-box" id="libraryEmptyState" style="display: none; margin-top: 2rem;">
+        <div class="empty-icon">🔍</div>
+        <h3>No Heirloom Recipes Found</h3>
+        <p>Try searching for a different ingredient or storyteller, or record a new recipe.</p>
+        <button class="save-cookbook-btn" id="btnGoToRecord" style="margin-top: 1rem;">
+          🎙️ Record a Voice Memo
+        </button>
+      </div>
+
+    </section>
+
+    <!-- TAB 3: Settings & Customization -->
+    <section class="tab-panel" id="settingsPanel" aria-labelledby="tabNavSettings">
+      <div class="settings-grid">
+        
+        <!-- Column 1: Family Personalization -->
+        <article class="card">
+          <div class="card-header-styled">
+            <div class="card-title-group">
+              <h2>⚙️ Customizable Family Settings</h2>
+              <p>Personalize the cookbook branding, heirlooms, and cover subtitle.</p>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.2rem;">
+            <label for="settingFamilyName">Family Cookbook Name</label>
+            <input type="text" id="settingFamilyName" value="The Rossi Family Cookbook">
+            <span style="font-size:0.8rem; color:var(--text-light); margin-top:0.2rem;">
+              Appears on your header, dashboard banner, and printable keepsake cards.
+            </span>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="settingFamilySubtitle">Dedication & Subtitle</label>
+            <input type="text" id="settingFamilySubtitle" value="Preserving recipes, memories, and wisdom passed through generations.">
+          </div>
+
+          <!-- Aesthetic Theme Switcher -->
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label>Aesthetic Heirloom Theme</label>
+            <div class="theme-options-grid">
+              
+              <div class="theme-card-option active" data-theme-name="warm">
+                <div class="theme-swatch" style="background: linear-gradient(135deg, #C85A32, #DDA15E);"></div>
+                <div class="theme-details">
+                  <strong>Warm Hearth</strong>
+                  <span>Terracotta & Amber</span>
+                </div>
+              </div>
+
+              <div class="theme-card-option" data-theme-name="parchment">
+                <div class="theme-swatch" style="background: linear-gradient(135deg, #9C6644, #D4C4AA);"></div>
+                <div class="theme-details">
+                  <strong>Vintage Parchment</strong>
+                  <span>Sepia & Antique Linen</span>
+                </div>
+              </div>
+
+              <div class="theme-card-option" data-theme-name="midnight">
+                <div class="theme-swatch" style="background: linear-gradient(135deg, #181514, #E07A5F);"></div>
+                <div class="theme-details">
+                  <strong>Midnight Kitchen</strong>
+                  <span>Warm Dark Slate</span>
+                </div>
+              </div>
+
+              <div class="theme-card-option" data-theme-name="rosewood">
+                <div class="theme-swatch" style="background: linear-gradient(135deg, #A44A5C, #F3E8EA);"></div>
+                <div class="theme-details">
+                  <strong>Rosewood & Flour</strong>
+                  <span>Dusty Rose & Gold</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <button class="save-cookbook-btn" id="saveSettingsBtn" type="button">
+            💾 Save Settings & Preferences
+          </button>
+        </article>
+
+        <!-- Column 2: Data Backup, Import & Export -->
+        <article class="card">
+          <div class="card-header-styled">
+            <div class="card-title-group">
+              <h2>📦 Archive Backup & Restore</h2>
+              <p>Keep your family memories safe forever with full offline export.</p>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <p style="font-size: 0.9rem; color: var(--text-muted);">
+              Export your entire family cookbook as a portable JSON file to email to relatives, print out, or archive in cloud drives.
+            </p>
+
+            <button class="save-cookbook-btn" id="exportArchiveBtn" style="background: var(--accent-sage);" type="button">
+              📥 Export Cookbook to JSON File
+            </button>
+
+            <label class="print-direct-btn" style="cursor: pointer; text-align: center; justify-content: center;">
+              📤 Import Cookbook JSON
+              <input type="file" id="importArchiveFile" accept=".json" style="display: none;">
+            </label>
+
+            <hr style="border: none; border-top: 1px solid var(--border-light); margin: 0.5rem 0;">
+
+            <button class="clear-btn" id="resetSampleDataBtn" style="text-align: left; padding: 0.5rem 0;" type="button">
+              🔄 Reset to Starter Heirloom Recipes
+            </button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================
+       Recipe Full View / Cook Along Modal
+       ========================================================== -->
+  <div class="modal-overlay" id="recipeDetailModal" aria-hidden="true">
+    <div class="modal-container">
+      <div class="modal-top-bar">
+        <span class="modal-top-title" id="modalTopCategory">Sunday Dinners</span>
+        <button class="modal-close-btn" id="closeDetailModalBtn" title="Close" aria-label="Close modal">✕</button>
+      </div>
+
+      <div class="modal-hero-cover" id="modalCoverContainer">
+        <img id="modalCoverImg" src="assets/images/hero_banner.jpg" alt="Recipe Dish">
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <span style="font-size:0.88rem; color:var(--accent-gold-dark); font-weight:700;" id="modalStorytellerHeader">
+            👵 Grandma Rosa · Circa 1952
+          </span>
+          <h2 class="modal-recipe-title" id="modalTitle">Sunday Rigatoni with Hand-Crushed Plum Gravy</h2>
+        </div>
+
+        <div class="extracted-meta-badges">
+          <span class="meta-chip">⏱️ Prep: <strong id="modalPrepTime">20 mins</strong></span>
+          <span class="meta-chip">🔥 Cook: <strong id="modalCookTime">3.5 hours</strong></span>
+          <span class="meta-chip">🍽️ Serves: <strong id="modalServings">6-8</strong></span>
+        </div>
+
+        <!-- Family Anecdote Box -->
+        <div class="modal-anecdote-card">
+          <div class="modal-anecdote-quote" id="modalAnecdote">
+            "My mother Carmela always made this in the cold winter months in Brooklyn..."
+          </div>
+          <div class="modal-anecdote-author" id="modalAnecdoteAuthor">
+            — Told by Grandma Rosa
+          </div>
+        </div>
+
+        <!-- Ingredients Checklist -->
+        <div>
+          <h3 class="section-label" style="margin-bottom: 0.8rem; font-size:1rem;">
+            🥣 Ingredients Checklist (Tap to check off)
+          </h3>
+          <div id="modalIngredientsList">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Step-by-Step Instructions -->
+        <div>
+          <h3 class="section-label" style="margin-bottom: 0.8rem; font-size:1rem;">
+            🍳 Step-by-Step Instructions
+          </h3>
+          <div id="modalInstructionsList">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="print-direct-btn" id="modalCopyTextBtn" type="button">
+          📋 Copy Formatted Text
+        </button>
+        <div style="display: flex; gap: 0.6rem;">
+          <button class="save-cookbook-btn" id="modalPrintCardBtn" type="button">
+            🖨️ Format & Print Heirloom Card
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       Print & Export Heirloom Card Modal
+       (Formatted with @media print for 4x6 / 8.5x11 printable cards)
+       ========================================================== -->
+  <div class="modal-overlay" id="printModal" aria-hidden="true">
+    <div class="modal-container" style="max-width: 820px; background: transparent; box-shadow: none;">
+      
+      <!-- Top Action Bar for screen only -->
+      <div class="modal-top-bar no-print" style="border-radius: var(--radius-md) var(--radius-md) 0 0; background: var(--bg-card);">
+        <span class="modal-top-title">🖨️ Printable Heirloom Keepsake Card</span>
+        <div style="display: flex; gap: 0.6rem; align-items: center;">
+          <button class="save-cookbook-btn" id="triggerBrowserPrintBtn" type="button">
+            Print Now
+          </button>
+          <button class="modal-close-btn" id="closePrintModalBtn" title="Close">✕</button>
+        </div>
+      </div>
+
+      <!-- Printable Keepsake Card Structure -->
+      <div class="print-card-wrapper" id="printableCardArea">
+        <div class="print-card-border-ornament">
+          
+          <div class="print-card-family-header">
+            <div class="print-family-name" id="printCardFamilyName">The Rossi Family Cookbook</div>
+            <div style="font-size: 0.85rem; font-style: italic; color: #7F654F;">Generational Heirloom Archive</div>
+          </div>
+
+          <h2 class="print-recipe-title" id="printCardRecipeTitle">Sunday Rigatoni with Hand-Crushed Plum Gravy</h2>
+          
+          <div class="print-meta-line" id="printCardMetaLine">
+            Recalled by Grandma Rosa · Circa 1952 · Prep: 20 mins · Cook: 3.5 hrs · Yield: 6-8
+          </div>
+
+          <!-- Anecdote Block -->
+          <div class="print-anecdote-block">
+            <div class="print-anecdote-label">Family Lore & Memories</div>
+            <div class="print-anecdote-text" id="printCardAnecdote">
+              "My mother Carmela always made this in the cold winter months..."
+            </div>
+          </div>
+
+          <!-- Dual Column: Ingredients & Instructions -->
+          <div class="print-columns-grid">
+            <div>
+              <div class="print-section-heading">Ingredients</div>
+              <ul class="print-ing-list" id="printCardIngredientsList">
+                <!-- Rendered dynamically -->
+              </ul>
+            </div>
+
+            <div>
+              <div class="print-section-heading">Preparation</div>
+              <ol class="print-steps-list" id="printCardStepsList">
+                <!-- Rendered dynamically -->
+              </ol>
+            </div>
+          </div>
+
+          <div class="print-footer-tagline">
+            "Every recipe tells the story of who we are." — Preserved with EchoRecollect
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div>
+        <strong id="footerFamilyName">The Rossi Family Cookbook</strong> — EchoRecollect Heirloom Keeper
+      </div>
+      <div>
+        Crafted for family stories, handwritten notes, and unforgettable meals.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="sample-recipes.js"></script>
+  <script src="extractor.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
